@@ -72,10 +72,9 @@ export class Scene {
       modulationOffset: 0.3,
     });
 
-    // Film grain
+    // Film grain (overlay to avoid darkening the scene)
     this.noiseEffect = new NoiseEffect({
-      blendFunction: BlendFunction.MULTIPLY,
-      premultiply: true,
+      blendFunction: BlendFunction.OVERLAY,
     });
 
     // Brightness/contrast for sanity effects

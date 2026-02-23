@@ -14,7 +14,7 @@ export class Crypt {
 
     this.stoneMat = createStoneMaterial(COLORS.STONE_DARK);
     this.stoneMidMat = createStoneMaterial(COLORS.STONE_MID);
-    this.floorMat = createStoneMaterial(0x0f0d0a, 0.98);
+    this.floorMat = createStoneMaterial(0x2a2520, 0.98);
     this.ironMat = createMetalMaterial(COLORS.IRON_RUST);
     this.boneMat = createStoneMaterial(COLORS.BONE_DARK);
 
