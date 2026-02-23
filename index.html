@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>THE HOLLOW</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap');
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      overflow: hidden;
+      background: #000;
+      color: #d4c4a0;
+      font-family: 'Crimson Text', serif;
+      cursor: none;
+    }
+
+    canvas { display: block; }
+
+    #blocker {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.95);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      cursor: default;
+    }
+
+    #blocker h1 {
+      font-family: 'Cinzel', serif;
+      font-size: 4rem;
+      font-weight: 900;
+      letter-spacing: 1.2rem;
+      color: #8a2b2b;
+      text-shadow: 0 0 40px rgba(138, 43, 43, 0.5), 0 0 80px rgba(138, 43, 43, 0.2);
+      margin-bottom: 0.5rem;
+      animation: titlePulse 4s ease-in-out infinite;
+    }
+
+    #blocker .subtitle {
+      font-family: 'Crimson Text', serif;
+      font-size: 1.1rem;
+      color: #6a6050;
+      letter-spacing: 0.3rem;
+      margin-bottom: 3rem;
+      font-style: italic;
+    }
+
+    #blocker .prompt {
+      font-family: 'Cinzel', serif;
+      font-size: 0.9rem;
+      color: #4a4035;
+      letter-spacing: 0.2rem;
+      animation: promptFade 2s ease-in-out infinite;
+    }
+
+    #loading {
+      position: fixed;
+      inset: 0;
+      background: #000;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 200;
+      transition: opacity 1s;
+    }
+
+    #loading .bar-container {
+      width: 200px;
+      height: 2px;
+      background: #1a1510;
+      margin-top: 2rem;
+    }
+
+    #loading .bar-fill {
+      height: 100%;
+      width: 0%;
+      background: #8a2b2b;
+      transition: width 0.3s;
+    }
+
+    #loading .text {
+      font-family: 'Cinzel', serif;
+      font-size: 0.8rem;
+      color: #4a4035;
+      letter-spacing: 0.2rem;
+      margin-top: 1rem;
+    }
+
+    @keyframes titlePulse {
+      0%, 100% { opacity: 0.8; }
+      50% { opacity: 1; }
+    }
+
+    @keyframes promptFade {
+      0%, 100% { opacity: 0.3; }
+      50% { opacity: 0.7; }
+    }
+
+    #crosshair {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 2px;
+      height: 2px;
+      background: rgba(200, 180, 150, 0.3);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 10;
+      box-shadow: 0 0 4px rgba(200, 180, 150, 0.1);
+      display: none;
+    }
+
+    #game-ui {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 10;
+      display: none;
+    }
+
+    #interact-prompt {
+      position: fixed;
+      bottom: 30%;
+      left: 50%;
+      transform: translateX(-50%);
+      font-family: 'Cinzel', serif;
+      font-size: 0.8rem;
+      color: rgba(200, 180, 150, 0.6);
+      letter-spacing: 0.15rem;
+      pointer-events: none;
+      z-index: 10;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+  </style>
+</head>
+<body>
+  <div id="loading">
+    <div class="bar-container"><div class="bar-fill" id="load-bar"></div></div>
+    <div class="text">DESCENDING...</div>
+  </div>
+
+  <div id="blocker">
+    <h1>THE HOLLOW</h1>
+    <div class="subtitle">something remembers</div>
+    <div class="prompt">click to begin</div>
+  </div>
+
+  <div id="crosshair"></div>
+  <div id="game-ui"></div>
+  <div id="interact-prompt">[E] Interact</div>
+
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>
