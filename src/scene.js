@@ -17,22 +17,26 @@ export class Scene {
     this.renderer.shadowMap.enabled = true;
     this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    this.renderer.toneMappingExposure = 0.6;
+    this.renderer.toneMappingExposure = 1.8;
     this.renderer.outputColorSpace = THREE.SRGBColorSpace;
     document.body.appendChild(this.renderer.domElement);
 
     // Scene
     this.scene = new THREE.Scene();
     this.scene.background = new THREE.Color(0x020201);
-    this.scene.fog = new THREE.FogExp2(COLORS.FOG, 0.04);
+    this.scene.fog = new THREE.FogExp2(COLORS.FOG, 0.018);
 
     // Camera
     this.camera = new THREE.PerspectiveCamera(
       70, window.innerWidth / window.innerHeight, 0.1, 100
     );
 
-    // Ambient light — very dim
-    this.ambientLight = new THREE.AmbientLight(COLORS.AMBIENT, 0.08);
+    // Ambient light — dim but present enough to see geometry
+    this.ambientLight = new THREE.AmbientLight(COLORS.AMBIENT, 0.5);
+
+    // Hemisphere light for subtle gradient (sky/ground)
+    this.hemiLight = new THREE.HemisphereLight(0x1a1830, 0x0a0808, 0.3);
+    this.scene.add(this.hemiLight);
     this.scene.add(this.ambientLight);
 
     // Post-processing
@@ -55,10 +59,10 @@ export class Scene {
     const renderPass = new RenderPass(this.scene, this.camera);
     this.composer.addPass(renderPass);
 
-    // Vignette
+    // Vignette (subtle at start)
     this.vignetteEffect = new VignetteEffect({
-      offset: 0.3,
-      darkness: 0.6,
+      offset: 0.4,
+      darkness: 0.4,
     });
 
     // Chromatic aberration
@@ -137,7 +141,7 @@ export class Scene {
     }
 
     // Fog density increases with low sanity
-    this.scene.fog.density = 0.04 + sanityFactor * 0.03;
+    this.scene.fog.density = 0.018 + sanityFactor * 0.015;
 
     // Screen breathing (barely perceptible scale pulse)
     this.breathScale = Math.sin(t * 0.8) * 0.002 * (1 + sanityFactor);

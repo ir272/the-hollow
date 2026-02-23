@@ -30,7 +30,7 @@ let clock;
 let wardenActivated = false;
 let allArtifactsCollected = false;
 let hallucinationWardens = [];
-let scriptedHorrorTimer = 0;
+let gameLoopRunning = false;
 
 // ============================================================
 // INIT
@@ -92,6 +92,10 @@ async function init() {
 
   updateLoadBar(100);
 
+  // Start the render loop immediately (renders behind loading/menu screens)
+  gameLoopRunning = true;
+  gameLoop();
+
   // Fade out loading screen
   await delay(500);
   const loadingEl = document.getElementById('loading');
@@ -102,28 +106,37 @@ async function init() {
   // Show title screen
   window.gameState = GAME_STATE.MENU;
   const blockerEl = document.getElementById('blocker');
-  blockerEl.addEventListener('click', startGame, { once: true });
+  blockerEl.addEventListener('click', startGame);
+
+  // Expose for debugging
+  window.startGame = startGame;
 }
 
 function startGame() {
+  if (window.gameState === GAME_STATE.PLAYING) return;
+
   const blockerEl = document.getElementById('blocker');
+  blockerEl.removeEventListener('click', startGame);
   blockerEl.style.transition = 'opacity 2s';
   blockerEl.style.opacity = '0';
 
   setTimeout(() => {
     blockerEl.style.display = 'none';
-    window.gameState = GAME_STATE.PLAYING;
-    hud.show();
-
-    // Init audio on user gesture
-    audioSystem.init();
-
-    // Request pointer lock
-    document.body.requestPointerLock();
-
-    // Start game loop
-    gameLoop();
   }, 2000);
+
+  // Transition to playing immediately
+  window.gameState = GAME_STATE.PLAYING;
+  hud.show();
+
+  // Init audio on user gesture
+  audioSystem.init();
+
+  // Request pointer lock (may fail if not from direct user gesture)
+  try {
+    document.body.requestPointerLock();
+  } catch (e) {
+    // Pointer lock will be acquired on next click
+  }
 }
 
 // ============================================================
@@ -192,7 +205,6 @@ function wireCallbacks() {
 
   artifactSystem.onAllCollected = () => {
     allArtifactsCollected = true;
-    // The exit (back wall) can now be used
   };
 
   // Lore events
@@ -302,6 +314,7 @@ function setupInteraction() {
 // GAME LOOP
 // ============================================================
 function gameLoop() {
+  if (!gameLoopRunning) return;
   requestAnimationFrame(gameLoop);
 
   const dt = Math.min(clock.getDelta(), 0.1); // Cap delta time
@@ -377,12 +390,11 @@ function gameLoop() {
     }
   }
 
-  // Render
+  // Always render (even during menu — shows scene behind blocker)
   scene.render();
 }
 
 function updateInteractPrompts(playerPos) {
-  // Check nearest interactables
   const nearestArtifact = artifactSystem.getNearest(playerPos);
   const nearestNote = loreSystem.getNearest(playerPos);
 
