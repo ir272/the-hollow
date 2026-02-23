@@ -32,10 +32,10 @@ export class Particles {
     geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
 
     const material = new THREE.PointsMaterial({
-      color: 0xaa9977,
-      size: 0.03,
+      color: 0xccbb99,
+      size: 0.06,
       transparent: true,
-      opacity: 0.3,
+      opacity: 0.5,
       blending: THREE.AdditiveBlending,
       depthWrite: false,
     });

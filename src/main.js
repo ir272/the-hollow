@@ -117,26 +117,47 @@ function startGame() {
 
   const blockerEl = document.getElementById('blocker');
   blockerEl.removeEventListener('click', startGame);
-  blockerEl.style.transition = 'opacity 2s';
-  blockerEl.style.opacity = '0';
 
-  setTimeout(() => {
-    blockerEl.style.display = 'none';
-  }, 2000);
-
-  // Transition to playing immediately
-  window.gameState = GAME_STATE.PLAYING;
-  hud.show();
-
-  // Init audio on user gesture
+  // Init audio on user gesture (must happen in click handler)
   audioSystem.init();
 
-  // Request pointer lock (may fail if not from direct user gesture)
+  // Request pointer lock
   try {
     document.body.requestPointerLock();
   } catch (e) {
-    // Pointer lock will be acquired on next click
+    // Will be acquired on next click
   }
+
+  // Slow fade out of title
+  blockerEl.style.transition = 'opacity 3s';
+  blockerEl.style.opacity = '0';
+
+  // Create wake-up overlay for cinematic fade-in
+  const wakeUp = document.createElement('div');
+  wakeUp.id = 'wake-up';
+  wakeUp.style.cssText = `
+    position: fixed;
+    inset: 0;
+    background: #000;
+    z-index: 90;
+    pointer-events: none;
+    transition: opacity 4s ease-out;
+  `;
+  document.body.appendChild(wakeUp);
+
+  // Start playing (game loop already running)
+  window.gameState = GAME_STATE.PLAYING;
+  hud.show();
+
+  // Slow fade from black — "you wake up"
+  setTimeout(() => {
+    wakeUp.style.opacity = '0';
+  }, 500);
+
+  setTimeout(() => {
+    blockerEl.style.display = 'none';
+    wakeUp.remove();
+  }, 5000);
 }
 
 // ============================================================
@@ -256,7 +277,7 @@ function restartGame() {
   allArtifactsCollected = false;
 
   // Reset player position
-  player.position.set(0, PLAYER_CONST.HEIGHT, -3);
+  player.position.set(0, PLAYER_CONST.HEIGHT, -5);
   player.yaw = 0;
   player.pitch = 0;
 

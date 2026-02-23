@@ -8,7 +8,7 @@ export class Player {
     this.colliders = colliders; // Array of AABB colliders
 
     // Position
-    this.position = new THREE.Vector3(0, PLAYER.HEIGHT, -3);
+    this.position = new THREE.Vector3(0, PLAYER.HEIGHT, -5);
     this.velocity = new THREE.Vector3();
     this.camera.position.copy(this.position);
 
