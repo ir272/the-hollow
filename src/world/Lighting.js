@@ -136,7 +136,7 @@ export class Lighting {
         const color = glassColors[colorIdx % glassColors.length];
         colorIdx++;
 
-        const shaft = new THREE.SpotLight(color, 0.5, 20, Math.PI / 6, 0.8, 2);
+        const shaft = new THREE.SpotLight(color, 1.0, 25, Math.PI / 6, 0.8, 1.5);
         shaft.position.set(xSign * halfW, CATHEDRAL.NAVE_HEIGHT * 0.55, z);
         shaft.target.position.set(xSign * (halfW - 4), 0, z);
         // NO shadow casting on these
@@ -145,7 +145,7 @@ export class Lighting {
 
         this.stainedGlassLights.push({
           light: shaft,
-          baseIntensity: 0.5,
+          baseIntensity: 1.0,
           phase: Math.random() * Math.PI * 2,
         });
       }

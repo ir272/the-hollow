@@ -78,6 +78,7 @@ export class Scene {
     this.noiseEffect = new NoiseEffect({
       blendFunction: BlendFunction.SOFT_LIGHT,
     });
+    this.noiseEffect.blendMode.opacity.value = 0.4;
 
     // Brightness/contrast for sanity effects
     this.brightnessEffect = new BrightnessContrastEffect({

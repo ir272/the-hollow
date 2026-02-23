@@ -497,9 +497,9 @@ export class Cathedral {
         const glassMat = new THREE.MeshStandardMaterial({
           color,
           emissive: color,
-          emissiveIntensity: 0.4,
+          emissiveIntensity: 1.5,
           transparent: true,
-          opacity: 0.5,
+          opacity: 0.7,
           roughness: 0.2,
           side: THREE.DoubleSide,
         });
