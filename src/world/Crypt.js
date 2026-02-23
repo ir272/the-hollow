@@ -12,11 +12,11 @@ export class Crypt {
     // Position crypt below cathedral
     this.group.position.set(0, -CRYPT.HEIGHT - 1, -30);
 
-    this.stoneMat = createStoneMaterial(COLORS.STONE_DARK);
-    this.stoneMidMat = createStoneMaterial(COLORS.STONE_MID);
-    this.floorMat = createStoneMaterial(0x2a2520, 0.98);
+    this.stoneMat = createStoneMaterial(0x6e6058);
+    this.stoneMidMat = createStoneMaterial(0x7a7068);
+    this.floorMat = createStoneMaterial(0x554a42, 0.98);
     this.ironMat = createMetalMaterial(COLORS.IRON_RUST);
-    this.boneMat = createStoneMaterial(COLORS.BONE_DARK);
+    this.boneMat = createStoneMaterial(COLORS.BONE);
 
     this.build();
     scene.add(this.group);

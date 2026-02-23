@@ -1,9 +1,9 @@
 import { defineConfig } from 'vite';
 
-export default defineConfig({
+export default defineConfig(({ command }) => ({
   root: '.',
   publicDir: 'public',
-  base: '/the-hollow/',
+  base: command === 'build' ? '/the-hollow/' : '/',
   build: {
     outDir: 'dist',
     sourcemap: false,
@@ -11,4 +11,4 @@ export default defineConfig({
   server: {
     open: true,
   },
-});
+}));

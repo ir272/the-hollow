@@ -17,35 +17,37 @@ export class Lighting {
     // Key candle positions — only a few cast shadows
     const candlePositions = [
       // Altar candles (shadow on center one only)
-      { x: -1, y: 1.3, z: -CATHEDRAL.NAVE_LENGTH - 3, intensity: 1.5, shadow: false },
-      { x: 1, y: 1.3, z: -CATHEDRAL.NAVE_LENGTH - 3, intensity: 1.5, shadow: false },
-      { x: 0, y: 1.3, z: -CATHEDRAL.NAVE_LENGTH - 2.5, intensity: 1.8, shadow: true },
+      { x: -1, y: 1.3, z: -CATHEDRAL.NAVE_LENGTH - 3, intensity: 2.0, shadow: false },
+      { x: 1, y: 1.3, z: -CATHEDRAL.NAVE_LENGTH - 3, intensity: 2.0, shadow: false },
+      { x: 0, y: 1.3, z: -CATHEDRAL.NAVE_LENGTH - 2.5, intensity: 2.5, shadow: true },
 
       // Nave candelabras — key shadow casters
-      { x: -3, y: 1.5, z: -15, intensity: 1.5, shadow: true },
-      { x: 3, y: 1.5, z: -35, intensity: 1.5, shadow: true },
-      { x: 0, y: 1.5, z: -48, intensity: 1.2, shadow: true },
+      { x: -3, y: 1.5, z: -10, intensity: 2.0, shadow: true },
+      { x: 3, y: 1.5, z: -25, intensity: 2.0, shadow: true },
+      { x: -3, y: 1.5, z: -40, intensity: 2.0, shadow: true },
+      { x: 3, y: 1.5, z: -52, intensity: 1.8, shadow: true },
 
       // Wall sconces — no shadows (too many)
       ...this.generateWallSconces(),
 
       // Aisle candles
-      { x: -10, y: 0.8, z: -12, intensity: 1.0, shadow: false },
-      { x: 10, y: 0.8, z: -28, intensity: 1.0, shadow: false },
-      { x: -10, y: 0.8, z: -40, intensity: 1.0, shadow: false },
+      { x: -10, y: 0.8, z: -12, intensity: 1.5, shadow: false },
+      { x: 10, y: 0.8, z: -20, intensity: 1.5, shadow: false },
+      { x: -10, y: 0.8, z: -32, intensity: 1.5, shadow: false },
+      { x: 10, y: 0.8, z: -44, intensity: 1.5, shadow: false },
 
       // Chapel candles
-      { x: -17, y: 0.8, z: -16, intensity: 1.0, shadow: false },
-      { x: 17, y: 0.8, z: -16, intensity: 1.0, shadow: false },
-      { x: -17, y: 0.8, z: -40, intensity: 1.0, shadow: false },
-      { x: 17, y: 0.8, z: -40, intensity: 1.0, shadow: false },
+      { x: -17, y: 0.8, z: -16, intensity: 1.5, shadow: false },
+      { x: 17, y: 0.8, z: -16, intensity: 1.5, shadow: false },
+      { x: -17, y: 0.8, z: -40, intensity: 1.5, shadow: false },
+      { x: 17, y: 0.8, z: -40, intensity: 1.5, shadow: false },
 
       // Crypt candles
-      { x: 0, y: -4.5, z: -34, intensity: 0.8, shadow: true },
-      { x: 0, y: -4.5, z: -45, intensity: 0.6, shadow: false },
-      { x: 0, y: -4.5, z: -55, intensity: 0.5, shadow: false },
-      { x: -5, y: -4.5, z: -38, intensity: 0.6, shadow: false },
-      { x: 5, y: -4.5, z: -52, intensity: 0.6, shadow: false },
+      { x: 0, y: -4.5, z: -34, intensity: 1.2, shadow: true },
+      { x: 0, y: -4.5, z: -45, intensity: 1.0, shadow: false },
+      { x: 0, y: -4.5, z: -55, intensity: 0.8, shadow: false },
+      { x: -5, y: -4.5, z: -38, intensity: 1.0, shadow: false },
+      { x: 5, y: -4.5, z: -52, intensity: 1.0, shadow: false },
     ];
 
     candlePositions.forEach(pos => {
@@ -59,8 +61,8 @@ export class Lighting {
     const spacing = CATHEDRAL.PILLAR_SPACING;
 
     for (let z = -spacing; z > -CATHEDRAL.NAVE_LENGTH + 4; z -= spacing * 2) {
-      sconces.push({ x: -halfW + 0.5, y: 3, z, intensity: 1.0, shadow: false });
-      sconces.push({ x: halfW - 0.5, y: 3, z, intensity: 1.0, shadow: false });
+      sconces.push({ x: -halfW + 0.5, y: 3, z, intensity: 1.5, shadow: false });
+      sconces.push({ x: halfW - 0.5, y: 3, z, intensity: 1.5, shadow: false });
     }
 
     return sconces;
@@ -72,7 +74,7 @@ export class Lighting {
       COLORS.CANDLE_LIGHT,
       baseIntensity,
       LIGHTING.CANDLE_DISTANCE,
-      2
+      1.5
     );
     light.position.set(x, y + 0.15, z);
 
@@ -155,7 +157,7 @@ export class Lighting {
       COLORS.LANTERN_LIGHT,
       LIGHTING.LANTERN_INTENSITY,
       LIGHTING.LANTERN_DISTANCE,
-      2
+      1.5
     );
     this.lanternLight.castShadow = true;
     this.lanternLight.shadow.mapSize.width = LIGHTING.SHADOW_MAP_SIZE;
@@ -166,7 +168,7 @@ export class Lighting {
     this.scene.add(this.lanternLight);
 
     // Secondary fill light (no shadow)
-    this.lanternFill = new THREE.PointLight(COLORS.LANTERN_LIGHT, 0.4, 8, 2);
+    this.lanternFill = new THREE.PointLight(COLORS.LANTERN_LIGHT, 0.6, 12, 1.5);
     this.scene.add(this.lanternFill);
 
     this.lanternFlickerActive = false;

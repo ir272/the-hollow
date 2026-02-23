@@ -10,18 +10,19 @@ export class Cathedral {
     this.colliders = []; // AABB boxes for collision
     this.interactables = []; // Things player can interact with
 
-    // Procedural textures for richer visuals
-    const stoneTexDark = createStoneTexture(74, 64, 56);
-    const stoneTexMid = createStoneTexture(90, 80, 72);
-    const stoneTexLight = createStoneTexture(106, 96, 88);
-    const floorTex = createFloorTexture(58, 53, 48);
-    const woodTex = createWoodTexture(74, 56, 32);
+    // Procedural textures — use brighter base values since texture IS the color
+    // (color is set to white so texture * color = texture, no double-darkening)
+    const stoneTexDark = createStoneTexture(110, 95, 85);
+    const stoneTexMid = createStoneTexture(130, 115, 105);
+    const stoneTexLight = createStoneTexture(150, 135, 125);
+    const floorTex = createFloorTexture(100, 90, 82);
+    const woodTex = createWoodTexture(120, 90, 55);
 
-    this.stoneMat = new THREE.MeshStandardMaterial({ color: COLORS.STONE_DARK, map: stoneTexDark, roughness: 0.95 });
-    this.stoneMidMat = new THREE.MeshStandardMaterial({ color: COLORS.STONE_MID, map: stoneTexMid, roughness: 0.92 });
-    this.stoneLightMat = new THREE.MeshStandardMaterial({ color: COLORS.STONE_LIGHT, map: stoneTexLight, roughness: 0.9 });
-    this.floorMat = new THREE.MeshStandardMaterial({ color: COLORS.STONE_FLOOR, map: floorTex, roughness: 0.98 });
-    this.woodMat = new THREE.MeshStandardMaterial({ color: COLORS.WOOD_PEW, map: woodTex, roughness: 0.85 });
+    this.stoneMat = new THREE.MeshStandardMaterial({ color: 0xffffff, map: stoneTexDark, roughness: 0.95 });
+    this.stoneMidMat = new THREE.MeshStandardMaterial({ color: 0xffffff, map: stoneTexMid, roughness: 0.92 });
+    this.stoneLightMat = new THREE.MeshStandardMaterial({ color: 0xffffff, map: stoneTexLight, roughness: 0.9 });
+    this.floorMat = new THREE.MeshStandardMaterial({ color: 0xffffff, map: floorTex, roughness: 0.98 });
+    this.woodMat = new THREE.MeshStandardMaterial({ color: 0xffffff, map: woodTex, roughness: 0.85 });
     this.ironMat = createMetalMaterial(COLORS.IRON);
     this.ironRustMat = createMetalMaterial(COLORS.IRON_RUST);
 

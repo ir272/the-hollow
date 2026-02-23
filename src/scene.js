@@ -23,20 +23,25 @@ export class Scene {
     // Scene
     this.scene = new THREE.Scene();
     this.scene.background = new THREE.Color(0x050404);
-    this.scene.fog = new THREE.FogExp2(COLORS.FOG, 0.018);
+    this.scene.fog = new THREE.FogExp2(COLORS.FOG, 0.012);
 
     // Camera
     this.camera = new THREE.PerspectiveCamera(
       70, window.innerWidth / window.innerHeight, 0.1, 100
     );
 
-    // Ambient light — enough to see the space
-    this.ambientLight = new THREE.AmbientLight(0x444055, 0.6);
+    // Ambient light — base visibility for the space
+    this.ambientLight = new THREE.AmbientLight(0x8888aa, 0.8);
     this.scene.add(this.ambientLight);
 
-    // Hemisphere light for top-down gradient
-    this.hemiLight = new THREE.HemisphereLight(0x222240, 0x0a0808, 0.4);
+    // Hemisphere light for top-down gradient (sky/ground)
+    this.hemiLight = new THREE.HemisphereLight(0x6666aa, 0x332211, 0.6);
     this.scene.add(this.hemiLight);
+
+    // Directional "moonlight" — faint top-down fill so geometry is always visible
+    this.moonLight = new THREE.DirectionalLight(0x8899bb, 0.3);
+    this.moonLight.position.set(2, 20, -30);
+    this.scene.add(this.moonLight);
 
     // Post-processing
     this.setupPostProcessing();
@@ -69,9 +74,9 @@ export class Scene {
       modulationOffset: 0.3,
     });
 
-    // Film grain
+    // Film grain (subtle)
     this.noiseEffect = new NoiseEffect({
-      blendFunction: BlendFunction.OVERLAY,
+      blendFunction: BlendFunction.SOFT_LIGHT,
     });
 
     // Brightness/contrast for sanity effects
@@ -138,7 +143,7 @@ export class Scene {
     }
 
     // Fog density increases with low sanity
-    this.scene.fog.density = 0.018 + sanityFactor * 0.015;
+    this.scene.fog.density = 0.012 + sanityFactor * 0.012;
 
     // Screen breathing (barely perceptible scale pulse)
     this.breathScale = Math.sin(t * 0.8) * 0.002 * (1 + sanityFactor);
