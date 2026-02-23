@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { CATHEDRAL, COLORS } from '../utils/constants.js';
 import { createStoneMaterial, createWoodMaterial, createMetalMaterial, randomRange } from '../utils/math.js';
+import { createStoneTexture, createFloorTexture, createWoodTexture } from '../utils/textures.js';
 
 export class Cathedral {
   constructor(scene) {
@@ -9,11 +10,18 @@ export class Cathedral {
     this.colliders = []; // AABB boxes for collision
     this.interactables = []; // Things player can interact with
 
-    this.stoneMat = createStoneMaterial(COLORS.STONE_DARK);
-    this.stoneMidMat = createStoneMaterial(COLORS.STONE_MID);
-    this.stoneLightMat = createStoneMaterial(COLORS.STONE_LIGHT);
-    this.floorMat = createStoneMaterial(COLORS.STONE_FLOOR, 0.98);
-    this.woodMat = createWoodMaterial(COLORS.WOOD_PEW);
+    // Procedural textures for richer visuals
+    const stoneTexDark = createStoneTexture(74, 64, 56);
+    const stoneTexMid = createStoneTexture(90, 80, 72);
+    const stoneTexLight = createStoneTexture(106, 96, 88);
+    const floorTex = createFloorTexture(58, 53, 48);
+    const woodTex = createWoodTexture(74, 56, 32);
+
+    this.stoneMat = new THREE.MeshStandardMaterial({ color: COLORS.STONE_DARK, map: stoneTexDark, roughness: 0.95 });
+    this.stoneMidMat = new THREE.MeshStandardMaterial({ color: COLORS.STONE_MID, map: stoneTexMid, roughness: 0.92 });
+    this.stoneLightMat = new THREE.MeshStandardMaterial({ color: COLORS.STONE_LIGHT, map: stoneTexLight, roughness: 0.9 });
+    this.floorMat = new THREE.MeshStandardMaterial({ color: COLORS.STONE_FLOOR, map: floorTex, roughness: 0.98 });
+    this.woodMat = new THREE.MeshStandardMaterial({ color: COLORS.WOOD_PEW, map: woodTex, roughness: 0.85 });
     this.ironMat = createMetalMaterial(COLORS.IRON);
     this.ironRustMat = createMetalMaterial(COLORS.IRON_RUST);
 
