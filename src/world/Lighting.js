@@ -127,7 +127,7 @@ export class Lighting {
 
   setupStainedGlassLights() {
     // Colored light shafts from stained glass — NO shadows
-    const halfW = (CATHEDRAL.NAVE_WIDTH + CATHEDRAL.AISLE_WIDTH * 2) / 2 + CATHEDRAL.WALL_THICKNESS;
+    const innerWall = (CATHEDRAL.NAVE_WIDTH + CATHEDRAL.AISLE_WIDTH * 2) / 2;
     const glassColors = [0x881111, 0x112255, 0x884411, 0x115522];
 
     let colorIdx = 0;
@@ -136,9 +136,9 @@ export class Lighting {
         const color = glassColors[colorIdx % glassColors.length];
         colorIdx++;
 
-        const shaft = new THREE.SpotLight(color, 1.0, 25, Math.PI / 6, 0.8, 1.5);
-        shaft.position.set(xSign * halfW, CATHEDRAL.NAVE_HEIGHT * 0.55, z);
-        shaft.target.position.set(xSign * (halfW - 4), 0, z);
+        const shaft = new THREE.SpotLight(color, 1.2, 25, Math.PI / 5, 0.7, 1.5);
+        shaft.position.set(xSign * innerWall, CATHEDRAL.NAVE_HEIGHT * 0.55, z);
+        shaft.target.position.set(xSign * (innerWall - xSign * 5), 0, z);
         // NO shadow casting on these
         this.scene.add(shaft);
         this.scene.add(shaft.target);

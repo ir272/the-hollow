@@ -481,55 +481,70 @@ export class Cathedral {
   }
 
   buildStainedGlassWindows() {
-    const halfW = (CATHEDRAL.NAVE_WIDTH + CATHEDRAL.AISLE_WIDTH * 2) / 2 + CATHEDRAL.WALL_THICKNESS;
+    // Inner wall surface position (where glass should be visible from inside)
+    const wallCenter = (CATHEDRAL.NAVE_WIDTH + CATHEDRAL.AISLE_WIDTH * 2) / 2 + CATHEDRAL.WALL_THICKNESS / 2;
+    const innerWall = wallCenter - CATHEDRAL.WALL_THICKNESS / 2;
     const windowH = 5;
     const windowW = 2;
     const windowY = CATHEDRAL.NAVE_HEIGHT * 0.55;
 
-    const glassColors = [COLORS.GLASS_RED, COLORS.GLASS_BLUE, COLORS.GLASS_AMBER, COLORS.GLASS_GREEN];
+    // Bright emissive colors for glass (visible glow from inside)
+    const glassEmissive = [0xff3333, 0x4488ff, 0xffaa33, 0x33ff66];
+    const glassBase = [COLORS.GLASS_RED, COLORS.GLASS_BLUE, COLORS.GLASS_AMBER, COLORS.GLASS_GREEN];
 
     let colorIdx = 0;
     for (let z = -4; z > -CATHEDRAL.NAVE_LENGTH + 4; z -= CATHEDRAL.PILLAR_SPACING) {
       for (const xSign of [-1, 1]) {
-        const color = glassColors[colorIdx % glassColors.length];
+        const baseColor = glassBase[colorIdx % glassBase.length];
+        const emColor = glassEmissive[colorIdx % glassEmissive.length];
         colorIdx++;
 
-        const glassMat = new THREE.MeshStandardMaterial({
-          color,
-          emissive: color,
-          emissiveIntensity: 1.5,
+        // MeshBasicMaterial — glass glows independently (backlit by exterior)
+        const glassMat = new THREE.MeshBasicMaterial({
+          color: emColor,
           transparent: true,
-          opacity: 0.7,
-          roughness: 0.2,
+          opacity: 0.85,
           side: THREE.DoubleSide,
         });
 
-        // Window frame
-        const frameGeo = new THREE.BoxGeometry(0.15, windowH + 0.4, windowW + 0.4);
-        const frame = new THREE.Mesh(frameGeo, this.stoneMidMat);
-        frame.position.set(xSign * halfW, windowY, z);
-        this.group.add(frame);
-
-        // Glass pane
+        // Thin glass pane — sits on inner wall surface, clearly visible
+        const glassX = xSign * (innerWall - 0.05);
         const glassGeo = new THREE.PlaneGeometry(windowW, windowH);
         const glass = new THREE.Mesh(glassGeo, glassMat);
-        glass.position.set(xSign * (halfW - 0.1), windowY, z);
+        glass.position.set(glassX, windowY, z);
         glass.rotation.y = Math.PI / 2;
         this.group.add(glass);
 
-        // Mullion (cross divider)
-        const mullionV = new THREE.Mesh(
-          new THREE.BoxGeometry(0.08, windowH, 0.08),
-          this.ironMat
-        );
-        mullionV.position.set(xSign * (halfW - 0.05), windowY, z);
-        this.group.add(mullionV);
+        // Stone frame around glass (4 thin bars)
+        const frameMat = this.stoneMidMat;
+        const fT = 0.2; // frame thickness
+        // Top
+        const frameTop = new THREE.Mesh(new THREE.BoxGeometry(fT, fT, windowW + fT * 2), frameMat);
+        frameTop.position.set(glassX, windowY + windowH / 2 + fT / 2, z);
+        this.group.add(frameTop);
+        // Bottom
+        const frameBot = new THREE.Mesh(new THREE.BoxGeometry(fT, fT, windowW + fT * 2), frameMat);
+        frameBot.position.set(glassX, windowY - windowH / 2 - fT / 2, z);
+        this.group.add(frameBot);
+        // Left
+        const frameL = new THREE.Mesh(new THREE.BoxGeometry(fT, windowH + fT * 2, fT), frameMat);
+        frameL.position.set(glassX, windowY, z - windowW / 2 - fT / 2);
+        this.group.add(frameL);
+        // Right
+        const frameR = new THREE.Mesh(new THREE.BoxGeometry(fT, windowH + fT * 2, fT), frameMat);
+        frameR.position.set(glassX, windowY, z + windowW / 2 + fT / 2);
+        this.group.add(frameR);
 
-        const mullionH = new THREE.Mesh(
-          new THREE.BoxGeometry(0.08, 0.08, windowW),
-          this.ironMat
+        // Mullion cross
+        const mullionV = new THREE.Mesh(
+          new THREE.BoxGeometry(0.1, windowH, 0.1), this.ironMat
         );
-        mullionH.position.set(xSign * (halfW - 0.05), windowY, z);
+        mullionV.position.set(glassX, windowY, z);
+        this.group.add(mullionV);
+        const mullionH = new THREE.Mesh(
+          new THREE.BoxGeometry(0.1, 0.1, windowW), this.ironMat
+        );
+        mullionH.position.set(glassX, windowY, z);
         this.group.add(mullionH);
       }
     }
