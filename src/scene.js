@@ -7,7 +7,7 @@ import { COLORS } from './utils/constants.js';
 
 export class Scene {
   constructor() {
-    // Renderer
+    // Renderer — disable tone mapping here, let postprocessing handle it
     this.renderer = new THREE.WebGLRenderer({
       antialias: false,
       powerPreference: 'high-performance',
@@ -16,14 +16,13 @@ export class Scene {
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     this.renderer.shadowMap.enabled = true;
     this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-    this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    this.renderer.toneMappingExposure = 1.8;
+    this.renderer.toneMapping = THREE.NoToneMapping;
     this.renderer.outputColorSpace = THREE.SRGBColorSpace;
     document.body.appendChild(this.renderer.domElement);
 
     // Scene
     this.scene = new THREE.Scene();
-    this.scene.background = new THREE.Color(0x020201);
+    this.scene.background = new THREE.Color(0x050404);
     this.scene.fog = new THREE.FogExp2(COLORS.FOG, 0.018);
 
     // Camera
@@ -31,13 +30,13 @@ export class Scene {
       70, window.innerWidth / window.innerHeight, 0.1, 100
     );
 
-    // Ambient light — dim but present enough to see geometry
-    this.ambientLight = new THREE.AmbientLight(COLORS.AMBIENT, 0.5);
-
-    // Hemisphere light for subtle gradient (sky/ground)
-    this.hemiLight = new THREE.HemisphereLight(0x1a1830, 0x0a0808, 0.3);
-    this.scene.add(this.hemiLight);
+    // Ambient light — enough to see the space
+    this.ambientLight = new THREE.AmbientLight(0x444055, 0.6);
     this.scene.add(this.ambientLight);
+
+    // Hemisphere light for top-down gradient
+    this.hemiLight = new THREE.HemisphereLight(0x222240, 0x0a0808, 0.4);
+    this.scene.add(this.hemiLight);
 
     // Post-processing
     this.setupPostProcessing();
@@ -45,24 +44,22 @@ export class Scene {
     // Resize
     window.addEventListener('resize', () => this.onResize());
 
-    // Effect parameters (controlled by sanity system)
-    this.vignetteIntensity = 0.4;
-    this.chromaticOffset = 0;
-    this.noiseIntensity = 0.12;
-    this.saturation = 0;
+    // Effect parameters
     this.breathScale = 0;
   }
 
   setupPostProcessing() {
-    this.composer = new EffectComposer(this.renderer);
+    this.composer = new EffectComposer(this.renderer, {
+      frameBufferType: THREE.HalfFloatType,
+    });
 
     const renderPass = new RenderPass(this.scene, this.camera);
     this.composer.addPass(renderPass);
 
     // Vignette (subtle at start)
     this.vignetteEffect = new VignetteEffect({
-      offset: 0.4,
-      darkness: 0.4,
+      offset: 0.45,
+      darkness: 0.35,
     });
 
     // Chromatic aberration
@@ -72,7 +69,7 @@ export class Scene {
       modulationOffset: 0.3,
     });
 
-    // Film grain (overlay to avoid darkening the scene)
+    // Film grain
     this.noiseEffect = new NoiseEffect({
       blendFunction: BlendFunction.OVERLAY,
     });
@@ -88,20 +85,22 @@ export class Scene {
       saturation: 0,
     });
 
-    // Tone mapping
+    // Tone mapping — handles exposure in postprocessing pipeline
     this.toneEffect = new ToneMappingEffect({
       mode: ToneMappingMode.AGX,
     });
 
-    // Combine effects into passes
+    // Pass 1: Tone mapping + vignette
     const effectPass1 = new EffectPass(
       this.camera,
+      this.toneEffect,
       this.vignetteEffect,
-      this.chromaticEffect,
     );
 
+    // Pass 2: Chromatic aberration + grain + brightness
     const effectPass2 = new EffectPass(
       this.camera,
+      this.chromaticEffect,
       this.noiseEffect,
       this.brightnessEffect,
       this.saturationEffect,
@@ -115,12 +114,11 @@ export class Scene {
   updateEffects(sanity, wardenProximity, dt) {
     const t = performance.now() * 0.001;
 
-    // Vignette: intensifies as sanity drops
-    const vignetteBase = 0.4;
-    const vignetteMax = 0.9;
     const sanityFactor = 1 - (sanity / 100);
-    this.vignetteEffect.offset = 0.3 - sanityFactor * 0.2;
-    this.vignetteEffect.darkness = vignetteBase + sanityFactor * (vignetteMax - vignetteBase);
+
+    // Vignette: intensifies as sanity drops
+    this.vignetteEffect.offset = 0.45 - sanityFactor * 0.25;
+    this.vignetteEffect.darkness = 0.35 + sanityFactor * 0.55;
 
     // Chromatic aberration: warps with warden proximity + low sanity
     const chromaBase = wardenProximity * 0.003;
