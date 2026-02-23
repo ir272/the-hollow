@@ -496,10 +496,10 @@ export class Cathedral {
         const glassMat = new THREE.MeshStandardMaterial({
           color,
           emissive: color,
-          emissiveIntensity: 0.15,
+          emissiveIntensity: 0.4,
           transparent: true,
-          opacity: 0.4,
-          roughness: 0.3,
+          opacity: 0.5,
+          roughness: 0.2,
           side: THREE.DoubleSide,
         });
 
@@ -552,6 +552,62 @@ export class Cathedral {
     this.createCobweb(-CATHEDRAL.NAVE_WIDTH / 2 - CATHEDRAL.AISLE_WIDTH, 8, -8);
     this.createCobweb(CATHEDRAL.NAVE_WIDTH / 2 + CATHEDRAL.AISLE_WIDTH, 8, -30);
     this.createCobweb(-CATHEDRAL.NAVE_WIDTH / 2, CATHEDRAL.NAVE_HEIGHT - 1, -50);
+
+    // Puddles (reflective floor patches)
+    this.createPuddle(2, -18, 1.5);
+    this.createPuddle(-4, -32, 1.0);
+    this.createPuddle(0, -44, 2.0);
+    this.createPuddle(-7, -50, 0.8);
+
+    // Iron chandeliers (hanging ring with candle holders)
+    this.createChandelier(0, CATHEDRAL.CEILING_HEIGHT - 4, -20);
+    this.createChandelier(0, CATHEDRAL.CEILING_HEIGHT - 4, -42);
+  }
+
+  createPuddle(x, z, radius) {
+    const puddleGeo = new THREE.CircleGeometry(radius, 16);
+    const puddleMat = new THREE.MeshStandardMaterial({
+      color: 0x1a2030,
+      roughness: 0.05,
+      metalness: 0.8,
+      transparent: true,
+      opacity: 0.6,
+    });
+    const puddle = new THREE.Mesh(puddleGeo, puddleMat);
+    puddle.rotation.x = -Math.PI / 2;
+    puddle.position.set(x, 0.01, z);
+    puddle.receiveShadow = true;
+    this.group.add(puddle);
+  }
+
+  createChandelier(x, y, z) {
+    const ironMat = this.ironRustMat;
+
+    // Main ring
+    const ringGeo = new THREE.TorusGeometry(1.2, 0.04, 6, 16);
+    const ring = new THREE.Mesh(ringGeo, ironMat);
+    ring.position.set(x, y, z);
+    ring.rotation.x = Math.PI / 2;
+    ring.castShadow = true;
+    this.group.add(ring);
+
+    // Hanging chains to ceiling (4 chains)
+    for (let i = 0; i < 4; i++) {
+      const angle = (i / 4) * Math.PI * 2;
+      const cx = x + Math.cos(angle) * 0.8;
+      const cz = z + Math.sin(angle) * 0.8;
+      this.createHangingChain(cx, CATHEDRAL.CEILING_HEIGHT, cz, CATHEDRAL.CEILING_HEIGHT - y, ironMat);
+    }
+
+    // Cross bars
+    const barGeo = new THREE.CylinderGeometry(0.02, 0.02, 2.4, 4);
+    for (let i = 0; i < 2; i++) {
+      const bar = new THREE.Mesh(barGeo, ironMat);
+      bar.position.set(x, y, z);
+      bar.rotation.z = Math.PI / 2;
+      bar.rotation.y = i * Math.PI / 2;
+      this.group.add(bar);
+    }
   }
 
   createHangingChain(x, startY, z, length, material) {
